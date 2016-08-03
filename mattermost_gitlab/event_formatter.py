@@ -51,6 +51,7 @@ class BaseEvent(object):
         raise NotImplementedError
 
     def should_report_event(self, report_events):
+	print(report_events)
         return report_events[self.object_kind]
 
     def format(self):
@@ -132,6 +133,12 @@ class TagEvent(BaseEvent):
             self.data['repository']['homepage']
         )
 
+class ProjectCreateEvent(BaseEvent):
+    def format(self):
+	return '%s created project %s.' % (
+	    self.data['owner_name'],
+	    self.data['name']
+	)
 
 class NoteEvent(BaseEvent):
     def format(self):
@@ -252,11 +259,14 @@ EVENT_CLASS_MAP = {
     constants.TAG_EVENT: TagEvent,
     constants.COMMENT_EVENT: NoteEvent,
     constants.MERGE_EVENT: MergeEvent,
+    constants.PROJECT_CREATE_EVENT: ProjectCreateEvent,
 }
 
 
 def as_event(data):
-    if data['object_kind'] in EVENT_CLASS_MAP:
+    if 'event_name' in data:
+        data['object_kind'] = data['event_name']  
+    if 'object_kind' in data and data['object_kind'] in EVENT_CLASS_MAP:
         return EVENT_CLASS_MAP[data['object_kind']](data)
     else:
         raise NotImplementedError('Unsupported event of type %s' % data['object_kind'])

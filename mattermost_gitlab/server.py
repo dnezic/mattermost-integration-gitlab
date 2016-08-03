@@ -146,6 +146,13 @@ def parse_args(args=None):
         help='On Continuous Integration events'
     )
 
+    event_options.add_argument(
+        '--no-project-create',
+        action='store_false',
+        dest=constants.PROJECT_CREATE_EVENT,
+        help='On project create events'
+    )
+
     options = vars(parser.parse_args(args=args))
 
     host, port = options.pop("host"), options.pop("port")
@@ -157,6 +164,7 @@ def parse_args(args=None):
         constants.COMMENT_EVENT: options.pop(constants.COMMENT_EVENT),
         constants.MERGE_EVENT: options.pop(constants.MERGE_EVENT),
         constants.CI_EVENT: options.pop(constants.CI_EVENT),
+        constants.PROJECT_CREATE_EVENT: options.pop(constants.PROJECT_CREATE_EVENT),
     }
 
     return host, port, options
